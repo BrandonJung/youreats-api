@@ -1,5 +1,7 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+import dotenv from "dotenv";
+import express from "express";
+import bodyParser from "body-parser";
+dotenv.config();
 const app = express();
 // Currently listens on local port 3000
 const port = 3000;
@@ -10,10 +12,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routers
-const restaurantRouter = require("./src/routes/restaurant");
-const foodRouter = require("./src/routes/food");
+import restaurantRouter from "./src/routes/restaurant.js";
+import foodRouter from "./src/routes/food.js";
+import templateRouter from "./src/routes/template.js";
 
 // Add url endpoints here
+app.use("/api/template", templateRouter);
 app.use("/api/restaurant", restaurantRouter);
 app.use("/api/food", foodRouter);
 

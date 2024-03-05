@@ -1,22 +1,15 @@
-const templateMethodGet = (data) => {
+export const templateMethodGet = (data) => {
   return { message: "testMethodWorked", data };
 };
 
-const templateMethodPost = (data) => {
+export const templateMethodPost = (data) => {
   return { message: "testMethodWorked", data };
 };
 
-const templateMethodPut = (data) => {
+export const templateMethodPut = (data) => {
   return { message: "testMethodWorked", data };
 };
 
-const templateMethodDelete = (data) => {
+export const templateMethodDelete = (data) => {
   return { message: "testMethodWorked", data };
-};
-
-module.exports = {
-  templateMethodGet,
-  templateMethodPost,
-  templateMethodPut,
-  templateMethodDelete,
 };
