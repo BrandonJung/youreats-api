@@ -6,7 +6,7 @@ import {
   templateMethodPut,
   templateMethodDelete,
 } from "../services/template/template.index.js";
-import { db } from "../../config.js";
+import { devDB } from "../../config.js";
 
 // router.get("/", (req, res) => {
 //   const retObject = templateMethodGet(req.body);
@@ -30,7 +30,7 @@ router.delete("/", (req, res) => {
 
 // Get a list of 50 posts
 router.get("/", async (req, res) => {
-  let collection = await db.collection("restaurants");
+  let collection = await devDB.collection("restaurants");
   let results = await collection.find({}).limit(50).toArray();
   res.send(results).status(200);
 });

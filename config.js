@@ -10,5 +10,4 @@ try {
   console.error(e);
 }
 
-//export each database here
-export const db = conn.db("test_data");
+export const devDB = conn.db("dev");
