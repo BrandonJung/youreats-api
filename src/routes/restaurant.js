@@ -1,18 +1,39 @@
 import express from "express";
-import { devDB } from "../../config.js";
+import {
+  addRestaurant,
+  deleteAllRestaurants,
+  retrieveRestaurants,
+} from "../services/restaurant/restaurant.index.js";
 const router = express.Router({ mergeParams: true });
 
-const restaurantColl = devDB.collection("Restaurants");
+router.post("/addRestaurant", async (req, res) => {
+  try {
+    const addRestaurantRes = await addRestaurant(req);
+    console.log("Add res", addRestaurantRes);
+    res.send(addRestaurantRes);
+  } catch (e) {
+    res.sendStatus(400);
+  }
+});
 
-router.post("/add", async (req, res) => {
-  const restaurantName = req?.body?.name;
-  const newRestaurantObject = {
-    name: restaurantName,
-    imageURL: "",
-    foodList: [],
-  };
-  const result = await restaurantColl.insertOne(newRestaurantObject);
-  res.send(result).status(200);
+router.get("/retrieveRestaurants", async (req, res) => {
+  try {
+    const retrieveRestaurantsRes = await retrieveRestaurants(req);
+    console.log("Retrieve Restaurant", retrieveRestaurantsRes);
+    res.send(retrieveRestaurantsRes);
+  } catch (e) {
+    res.sendStatus(400);
+  }
+});
+
+router.delete("/deleteAllRestaurants", async (req, res) => {
+  try {
+    const deleteAllRestaurantsRes = await deleteAllRestaurants();
+    console.log("Delete Restaurants", deleteAllRestaurantsRes);
+    res.send(deleteAllRestaurantsRes);
+  } catch (e) {
+    res.sendStatus(400);
+  }
 });
 
 export default router;
