@@ -109,6 +109,15 @@ export const addFoodItem = async (params) => {
   }
 };
 
+export const retrieveFoodsList = async (params) => {
+  const foodsListId = params?.query?.foodsListId;
+  if (!foodsListId) throw new Error("Missing foods list id");
+  const retrieveFoodsListRes = await foodListColl.findOne({
+    _id: new ObjectId(foodsListId),
+  });
+  return retrieveFoodsListRes;
+};
+
 export const deleteAllFoods = async () => {
   const deleteAllFoodsRes = await foodListColl.deleteMany({});
   return deleteAllFoodsRes;

@@ -14,7 +14,7 @@ router.get("/retrieveUserByUserId", async (req, res) => {
       res.send(userRes);
     }
   } catch (e) {
-    res.sendStatus(404);
+    console.log(e);
   }
 });
 
@@ -24,7 +24,7 @@ router.post("/createUser", async (req, res) => {
     console.log("Make User Res: " + makeUserRes);
     res.send(makeUserRes);
   } catch (e) {
-    res.sendStatus(400);
+    console.log(e);
   }
 });
 
@@ -34,7 +34,7 @@ router.delete("/deleteAllUsers", async (req, res) => {
     console.log("Delete All Users Res: " + deleteAllUsersRes);
     res.send(deleteAllUsersRes);
   } catch (e) {
-    res.sendStatus(400);
+    console.log(e);
   }
 });
 

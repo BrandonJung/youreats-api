@@ -12,7 +12,7 @@ router.post("/addRestaurant", async (req, res) => {
     console.log("Add res", addRestaurantRes);
     res.send(addRestaurantRes);
   } catch (e) {
-    res.sendStatus(400);
+    console.log(e);
   }
 });
 
@@ -22,7 +22,7 @@ router.get("/retrieveRestaurants", async (req, res) => {
     console.log("Retrieve Restaurant", retrieveRestaurantsRes);
     res.send(retrieveRestaurantsRes);
   } catch (e) {
-    res.sendStatus(400);
+    console.log(e);
   }
 });
 
@@ -32,7 +32,7 @@ router.delete("/deleteAllRestaurants", async (req, res) => {
     console.log("Delete Restaurants", deleteAllRestaurantsRes);
     res.send(deleteAllRestaurantsRes);
   } catch (e) {
-    res.sendStatus(400);
+    console.log(e);
   }
 });
 
