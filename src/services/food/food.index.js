@@ -93,6 +93,7 @@ export const addFoodItem = async (params) => {
   } else {
     // Restaurant food list doesn't exist
     const newFoodListObject = {
+      restaurantId: nRestaurantId,
       foods: [newFoodItemObject],
     };
     const insertFoodListRes = await foodListColl.insertOne(newFoodListObject);
