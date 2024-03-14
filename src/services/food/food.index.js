@@ -2,7 +2,7 @@ import { ObjectId } from "bson";
 import { devDB } from "../../../config.js";
 
 const restaurantColl = devDB.collection("Restaurants");
-const foodListColl = devDB.collection("FoodsList");
+const foodColl = devDB.collection("Foods");
 
 export const addFoodItem = async (params) => {
   const foodName = params?.body?.foodName;
@@ -33,11 +33,13 @@ export const addFoodItem = async (params) => {
 
   let newFoodItemObject = {
     name: foodName,
-    restaurantId: nRestaurantId,
+    lowerName: foodName.toLowerCase(),
     eaters: [eaterName],
+    restaurantId: nRestaurantId,
     ratings: [],
     notes: [],
   };
+
   if (rating) {
     newFoodItemObject.ratings = [newRatingObject];
   }
@@ -45,81 +47,83 @@ export const addFoodItem = async (params) => {
     newFoodItemObject.notes = [newNoteObject];
   }
 
-  if (restaurantObject.foodListId) {
-    // Restaurant food list exists
-    const foodListId = new ObjectId(restaurantObject.foodListId);
-    let foodListObject = await foodListColl.findOne({
-      _id: foodListId,
-    });
-    let foodsObject = foodListObject.foods;
-    const foodItemAlreadyExistsIndex = foodsObject.findIndex(
-      (food) => food.name.toLowerCase() === foodName.toLowerCase()
+  let foodItem = await foodColl.findOne({
+    restaurantId: nRestaurantId,
+    lowerName: foodName.toLowerCase(),
+  });
+
+  if (foodItem) {
+    // food item already exists
+    const eaterAlreadyExists = foodItem.eaters.findIndex(
+      (eater) => eater.toLowerCase() === eaterName.toLowerCase()
     );
-    if (foodItemAlreadyExistsIndex > -1) {
-      // Food Item exists
-      const eaterAlreadyExists = foodsObject[
-        foodItemAlreadyExistsIndex
-      ].eaters.findIndex(
-        (eater) => eater.toLowerCase() === eaterName.toLowerCase()
-      );
-      if (eaterAlreadyExists === -1) {
-        foodsObject[foodItemAlreadyExistsIndex].eaters.push(eaterName);
-      }
-      if (rating) {
-        foodsObject[foodItemAlreadyExistsIndex].ratings.push(newRatingObject);
-      }
-      if (note) {
-        foodsObject[foodItemAlreadyExistsIndex].notes.push(newNoteObject);
-      }
-      const modifyExistingFoodListRes = await foodListColl.updateOne(
-        {
-          _id: foodListObject._id,
-        },
-        {
-          $set: {
-            foods: foodsObject,
-          },
-        }
-      );
-      return modifyExistingFoodListRes;
-    } else {
-      // Food Item doesn't exist
-      const updateFoodsListRes = await foodListColl.updateOne(
-        { _id: foodListObject._id },
-        { $push: { foods: newFoodItemObject } }
-      );
-      return updateFoodsListRes;
+    if (eaterAlreadyExists === -1) {
+      foodItem.eaters.push(eaterName);
     }
-  } else {
-    // Restaurant food list doesn't exist
-    const newFoodListObject = {
-      restaurantId: nRestaurantId,
-      foods: [newFoodItemObject],
-    };
-    const insertFoodListRes = await foodListColl.insertOne(newFoodListObject);
-    const insertedFoodListId = insertFoodListRes.insertedId;
-    const restaurantFoodListRes = await restaurantColl.updateOne(
-      { _id: nRestaurantId },
-      {
-        $set: {
-          foodListId: insertedFoodListId,
-        },
-      }
+    if (rating) {
+      foodItem.ratings.push(newRatingObject);
+    }
+    if (note) {
+      foodItem.notes.push(newNoteObject);
+    }
+    const updateFoodItem = await foodColl.updateOne(
+      { _id: new ObjectId(foodItem._id) },
+      { foodItem }
     );
-    return restaurantFoodListRes;
+    return updateFoodItem;
+  } else {
+    const insertFoodItem = await foodColl.insertOne(newFoodItemObject);
+    const insertedFoodId = insertFoodItem.insertedId;
+    if (restaurantObject) {
+      const restaurantFoodListRes = await restaurantColl.updateOne(
+        { _id: nRestaurantId },
+        { $push: { foods: insertedFoodId } }
+      );
+      return restaurantFoodListRes;
+    }
   }
 };
 
 export const retrieveFoodsList = async (params) => {
-  const foodsListId = params?.query?.foodsListId;
-  if (!foodsListId) throw new Error("Missing foods list id");
-  const retrieveFoodsListRes = await foodListColl.findOne({
-    _id: new ObjectId(foodsListId),
+  const foodsArray = params?.query?.foodsArray;
+  if (!foodsArray) throw new Error("Missing foods list id");
+  const searchFoodsArray = foodsArray.map((foodId) => {
+    return new ObjectId(foodId);
   });
+  const retrieveFoodsListRes = await foodColl
+    .find({
+      _id: { $in: searchFoodsArray },
+    })
+    .toArray();
   return retrieveFoodsListRes;
 };
 
+export const updateField = async (params) => {
+  const { fieldKey, fieldValue, foodKey, restaurantKey } = params?.body;
+  if (!fieldKey || !fieldValue || !foodKey || !restaurantKey) {
+    throw new Error("Missing params");
+  }
+  const nFoodKey = new ObjectId(foodKey);
+  let updateObj = {};
+  if (fieldKey === "name") {
+    updateObj[`${fieldKey}`] = fieldValue;
+    updateObj["lowerName"] = fieldValue.toLowerCase();
+  } else {
+    updateObj[`${fieldKey}`] = fieldValue;
+  }
+  const updateFieldRes = await foodColl.updateOne(
+    {
+      _id: nFoodKey,
+    },
+    {
+      $set: updateObj,
+    }
+  );
+  const updatedItemObject = await foodColl.findOne({ _id: nFoodKey });
+  return updatedItemObject;
+};
+
 export const deleteAllFoods = async () => {
-  const deleteAllFoodsRes = await foodListColl.deleteMany({});
+  const deleteAllFoodsRes = await foodColl.deleteMany({});
   return deleteAllFoodsRes;
 };

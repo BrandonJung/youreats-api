@@ -3,6 +3,7 @@ import {
   addFoodItem,
   deleteAllFoods,
   retrieveFoodsList,
+  updateField,
 } from "../services/food/food.index.js";
 const router = express.Router({ mergeParams: true });
 
@@ -11,6 +12,16 @@ router.post("/addFoodItem", async (req, res) => {
     const addFoodRes = await addFoodItem(req);
     console.log("Add res", addFoodRes);
     res.send(addFoodRes);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+router.post("/updateField", async (req, res) => {
+  try {
+    const updateFieldRes = await updateField(req);
+    console.log("Update res", updateFieldRes);
+    res.send(updateFieldRes);
   } catch (e) {
     console.log(e);
   }
