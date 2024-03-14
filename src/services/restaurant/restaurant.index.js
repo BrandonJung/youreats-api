@@ -19,7 +19,6 @@ export const addRestaurant = async (params) => {
 
 export const retrieveRestaurants = async (params) => {
   const userId = params?.query?.userId;
-  const nUserId = new ObjectId(userId);
   const retrieveRestaurantsRes = await restaurantColl
     .find({
       usersSubscribed: userId,
