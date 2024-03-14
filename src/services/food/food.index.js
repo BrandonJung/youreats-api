@@ -68,7 +68,7 @@ export const addFoodItem = async (params) => {
     }
     const updateFoodItem = await foodColl.updateOne(
       { _id: new ObjectId(foodItem._id) },
-      { foodItem }
+      { $set: foodItem }
     );
     return updateFoodItem;
   } else {
