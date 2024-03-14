@@ -38,7 +38,7 @@ router.get("/retrieveRestaurantById", async (req, res) => {
   }
 });
 
-router.post("/updateField", async (req, res) => {
+router.post("/updateRestaurantField", async (req, res) => {
   try {
     const updateFieldRes = await updateRestaurantField(req);
     console.log("Update res field", updateFieldRes);
