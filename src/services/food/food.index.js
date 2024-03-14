@@ -98,7 +98,7 @@ export const retrieveFoodsList = async (params) => {
   return retrieveFoodsListRes;
 };
 
-export const updateField = async (params) => {
+export const updateFoodField = async (params) => {
   const { fieldKey, fieldValue, foodKey, restaurantKey } = params?.body;
   if (!fieldKey || !fieldValue || !foodKey || !restaurantKey) {
     throw new Error("Missing params");
