@@ -12,6 +12,7 @@ export const addRestaurant = async (params) => {
     imageURL: "",
     foods: [],
     usersSubscribed: [userId],
+    createdBy: userId,
   };
   const newRestaurantRes = await restaurantColl.insertOne(newRestaurantObject);
   return newRestaurantRes;

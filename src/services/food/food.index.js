@@ -21,6 +21,8 @@ export const addFoodItem = async (params) => {
     _id: nRestaurantId,
   });
 
+  const createdById = restaurantObject.createdBy;
+
   const newNoteObject = {
     eater: eaterName,
     note: note,
@@ -36,8 +38,10 @@ export const addFoodItem = async (params) => {
     lowerName: foodName.toLowerCase(),
     eaters: [eaterName],
     restaurantId: nRestaurantId,
+    createdBy: createdById,
     ratings: [],
     notes: [],
+    tags: [],
   };
 
   if (rating) {
@@ -121,6 +125,42 @@ export const updateFoodField = async (params) => {
   );
   const updatedItemObject = await foodColl.findOne({ _id: nFoodKey });
   return updatedItemObject;
+};
+
+export const addFoodTag = async (params) => {
+  const foodId = params?.body?.foodId;
+  const foodTag = params?.body?.foodTag;
+  if (!foodId || !foodTag) {
+    throw new Error("Missing Params");
+  }
+  console.log("asdf", foodId);
+  const nFoodId = new ObjectId(foodId);
+  const updateTagRes = await foodColl.updateOne(
+    {
+      _id: nFoodId,
+    },
+    { $push: { tags: foodTag } }
+  );
+  const updatedFoodObject = await foodColl.findOne({ _id: nFoodId });
+  return updatedFoodObject;
+};
+
+export const removeFoodTag = async (params) => {
+  const foodId = params?.body?.foodId;
+  const foodTagIndex = params?.body?.foodTagIndex;
+  if (!foodId || foodTagIndex === null || foodTagIndex === undefined) {
+    throw new Error("Missing Params");
+  }
+  const nFoodId = new ObjectId(foodId);
+  const foodObject = await foodColl.findOne({ _id: nFoodId });
+  let tagArray = foodObject.tags;
+  tagArray.splice(foodTagIndex, 1);
+  const updateTagRes = await foodColl.updateOne(
+    { _id: nFoodId },
+    { $set: { tags: tagArray } }
+  );
+  const updatedFoodObject = await foodColl.findOne({ _id: nFoodId });
+  return updatedFoodObject;
 };
 
 export const deleteAllFoods = async () => {
