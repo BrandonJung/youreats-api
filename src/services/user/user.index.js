@@ -5,16 +5,22 @@ const userColl = devDB.collection("Users");
 
 export const retrieveUser = async (params) => {
   const userId = params?.query?.userId;
-  const nUserId = new ObjectId(userId);
+  const nUserName = new ObjectId(userId);
   if (userId) {
-    const userRes = await userColl
-      .find({
-        _id: nUserId,
-      })
-      .toArray();
+    const userRes = await userColl.find({ _id: nUserName }).toArray();
     return userRes[0];
   } else {
     throw new Error("No user ID provided");
+  }
+};
+
+export const loginUser = async (params) => {
+  const userName = params?.query?.userName;
+  if (userName) {
+    const userRes = await userColl.find({ email: userName }).toArray();
+    return userRes[0];
+  } else {
+    throw new Error("No user name provided");
   }
 };
 

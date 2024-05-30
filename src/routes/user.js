@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deleteAllUsers,
+  loginUser,
   makeUser,
   retrieveUser,
 } from "../services/user/user.index.js";
@@ -13,6 +14,16 @@ router.get("/retrieveUserByUserId", async (req, res) => {
     if (userRes) {
       res.send(userRes);
     }
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+router.get("/loginUserByUsername", async (req, res) => {
+  try {
+    const userRes = await loginUser(req);
+    console.log("Login Res: " + userRes);
+    res.send(userRes);
   } catch (e) {
     console.log(e);
   }
